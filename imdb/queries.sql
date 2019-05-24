@@ -23,3 +23,52 @@ select count(*) from (
     group by i.movieId
     having avg(p.height) > 190
 ) x; -- result 190
+
+-- 1. c. The movie genre relation does not have a primary key, which can lead to a movie having more than one entry with the same genre. How many movies in movie genre have such duplicate entries?
+
+select count(*) from
+  (select movieId from movie_genre
+  group by movieId
+  having count(distinct genre) <> count(*)
+  )
+; -- 143
+
+-- According to the information in the database, 476 different persons acted in movies directed by ‘Francis Ford Coppola’. How many different persons acted in movies directed by ‘Steven Spielberg’?
+
+select count(distinct i1.personId)
+ from involved i1
+     join involved i2 on i1.movieId = i2.movieId
+     join person p on i2.personId = p.id
+ where i1.role = 'actor'
+   and i2.role = 'director'
+   and p.name = 'Francis Ford Coppola'
+; -- test / result - 476
+
+select count(distinct i1.personId)
+  from involved i1
+    join involved i2 on i1.movieId = i2.movieId
+    join person p on i2.personId = p.id
+  where i1.role = 'actor'
+  and i2.role = 'director'
+  and p.name = 'Steven Spielberg'
+; -- result 2219
+
+-- 1. e. Of all the movies produced in 2002, there are 12 that have no registered entry in involved. How many movies produced in 1999 have no registered entry in involved?
+
+select count(*)
+  from movie m
+  where m.year = 2002
+  and m.id not in (
+    select i.movieId
+    from involved i
+  )
+; -- test; result 12
+
+select count(*)
+  from movie m
+  where m.year = 1999
+  and m.id not in (
+    select i.movieId
+    from involved i
+  )
+; -- result 7
