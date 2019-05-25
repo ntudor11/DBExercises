@@ -61,3 +61,19 @@ select count(distinct s1.songId)
 select count(*)/count(distinct GenreId) from AlbumGenres; -- test, result 26.5246
 
 select count(*)/count(distinct albumId) from AlbumGenres; -- result 1.1994
+
+-- 2. h. An album can have multiple genres. There are 1215 albums in the database that do not have the genre Rock. How many albums do not have the genre HipHop?
+
+select count(*) from Albums
+  where albumId not in (
+    select albumId from albumGenres a, Genres g
+    where g.genreId = a.genreId
+    and g.genre = 'Rock'
+); -- test, result 1215
+
+select count(*) from Albums
+  where AlbumId not in (
+    select albumId from albumGenres a, Genres g
+    where a.GenreId = g.GenreId
+    and g.Genre = 'HipHop'
+); -- result 1278
