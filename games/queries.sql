@@ -50,3 +50,49 @@ select count(distinct pa.playerId)
       where pa.playerId = s.playerId
       and a.gameId = s.gameId
   ); -- result 486
+
+-- OR:
+
+select count(distinct playerId)
+from PlayerAchievement PA
+    join Achievement A on PA.achievementId = A.id
+where Pa.playerId not in (
+    select S.playerId
+    from Score S
+    where A.gameId = S.gameId
+);
+
+-- 1. f. One player has played all the games named “Bioforge”. How many players have played all the games named “Project Eden”?
+
+select count(*) from (
+  select distinct s.playerId, g.name
+  from Score s
+    join Game g on s.gameId = g.id
+    where g.name = "Bioforge"
+  group by s.playerId
+  having count(s.playerId) > 1) x; -- test, result 1
+
+
+select count(*) from (
+  select distinct s.playerId, g.name
+  from Score s
+    join Game g on s.gameId = g.id
+    where g.name = "Project Eden"
+    group by s.playerId
+    having count(s.playerId) > 1) x; -- result 2
+
+-- 1. g. One game name is used by three different producers. How many game names are used by two different producers?
+
+select count(*) from (
+  select g.name
+  from Game g
+  group by g.name
+  having count(g.producer) = 3
+) x; -- test, result 1
+
+select count(*) from (
+  select g.name
+  from Game g
+  group by g.name
+  having count(g.producer) = 2
+) x; -- result 7
