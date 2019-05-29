@@ -96,3 +96,10 @@ select count(*) from (
   group by g.name
   having count(g.producer) = 2
 ) x; -- result 7
+
+-- 1. h. How many pairs of games have the same name? Hint: The results of the previous problem should give you the answer, since a name with three games gives three pairs, and a name with two games gives one pair. The task here is to write a single query that counts all pairs, even in a case where a single name is used for many games.
+
+select count(*)
+  from game G1
+    join game G2 on G1.name = G2.name
+    and G1.id < G2.id; -- result 10
